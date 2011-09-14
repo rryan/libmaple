@@ -3,8 +3,20 @@ sp := $(sp).x
 dirstack_$(sp) := $(d)
 d := $(dir)
 BUILDDIRS += $(BUILD_PATH)/$(d)
+BUILDDIRS += $(BUILD_PATH)/$(d)/google/protobuf-c
 
-# Nothing to do here so far.
+# Local rules and targets
+cSRCS_$(d) := google/protobuf-c/protobuf-c-data-buffer.c \
+              google/protobuf-c/protobuf-c.c
+
+cFILES_$(d) := $(cSRCS_$(d):%=$(d)/%)
+
+OBJS_$(d) := $(cFILES_$(d):%.c=$(BUILD_PATH)/%.o)
+DEPS_$(d) := $(OBJS_$(d):%.o=%.d)
+
+$(OBJS_$(d)): TGT_CXXFLAGS := $(CXXFLAGS_$(d))
+
+TGT_BIN += $(OBJS_$(d))
 
 # Standard things
 -include $(DEPS_$(d))
